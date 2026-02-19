@@ -2,77 +2,142 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Rencontre - Version Améliorée</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#f0f4f8">
+    <title>La Rencontre - Ultimate Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-color: #f0f4f8;
+            --bg-gradient-1: #ffecd2;
+            --bg-gradient-2: #fcb69f;
             --track-line: #bcccdc;
             --accent-color: #48cae4;
+            --accent-dark: #0096c7;
             --text-color: #2b2d42;
             --heart-color: #e63946;
+            --success-color: #06ffa5;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-1: #1a1a2e;
+            --bg-gradient-2: #16213e;
+            --track-line: #3d5a80;
+            --text-color: #e8f3f8;
+            --heart-color: #ff6b9d;
+            --card-bg: rgba(30, 30, 46, 0.95);
+            --shadow: rgba(0, 0, 0, 0.3);
         }
 
         * {
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             margin: 0;
             min-height: 100vh;
             width: 100vw;
-            background: linear-gradient(135deg, #f0f4f8 0%, #e8f3f8 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%);
             font-family: 'Fredoka', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            padding: 15px;
+            overflow-x: hidden;
             user-select: none;
             position: relative;
+            transition: background 0.3s ease;
+        }
+
+        header {
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 15px;
         }
 
         h1 { 
-            margin-bottom: 5px; 
+            margin: 0 0 5px 0;
             color: var(--text-color);
-            font-size: 2.5rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.2;
         }
         
-        p { 
+        .subtitle { 
             color: #8d99ae; 
-            margin-bottom: 20px;
-            font-size: 1.1rem;
+            margin: 0;
+            font-size: 0.85rem;
+            font-weight: 400;
         }
 
-        /* --- STATS --- */
-        .stats-container {
+        .top-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
             display: flex;
-            gap: 30px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+            gap: 10px;
+            z-index: 50;
+        }
+
+        .icon-btn {
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 50%;
+            background: var(--card-bg);
+            box-shadow: 0 4px 12px var(--shadow);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
             justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .icon-btn:active {
+            transform: scale(0.9);
+        }
+
+        .icon-btn.active {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 15px;
         }
 
         .stat-box {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px 25px;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px var(--shadow);
             text-align: center;
-            min-width: 150px;
+            backdrop-filter: blur(10px);
         }
 
         .stat-label {
-            font-size: 0.9rem;
+            font-size: 0.7rem;
             color: #8d99ae;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
         }
 
         .stat-value {
-            font-size: 1.8rem;
-            font-weight: bold;
+            font-size: 1.3rem;
+            font-weight: 700;
             color: var(--text-color);
         }
 
@@ -80,126 +145,164 @@
             color: var(--heart-color);
         }
 
-        /* --- PISTE --- */
+        .achievement {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-150px);
+            background: linear-gradient(135deg, #FFD93D 0%, #f093fb 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            font-weight: 600;
+            z-index: 200;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            font-size: 0.95rem;
+            text-align: center;
+            max-width: 80%;
+        }
+
+        .achievement.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
         .track-container {
             position: relative;
-            width: 90%;
-            max-width: 700px;
-            height: 150px;
-            border-bottom: 5px solid var(--track-line);
-            margin-bottom: 50px;
-            background: linear-gradient(to bottom, transparent 80%, rgba(188, 204, 220, 0.1) 100%);
+            width: 100%;
+            max-width: 500px;
+            height: 140px;
+            border-bottom: 4px solid var(--track-line);
+            margin-bottom: 20px;
+            background: linear-gradient(to bottom, transparent 85%, rgba(188, 204, 220, 0.1) 100%);
+            border-radius: 10px 10px 0 0;
         }
 
-        /* Ligne de progression */
         .progress-line {
             position: absolute;
-            bottom: -5px;
+            bottom: -4px;
             left: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #48cae4, #0096c7);
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px rgba(72, 202, 228, 0.5);
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--accent-dark));
+            transition: width 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 0 15px var(--accent-color);
+            border-radius: 2px;
         }
 
-        /* --- PERSONNAGES --- */
         .character {
             position: absolute;
             bottom: 0;
-            width: 90px;
-            height: 120px;
+            width: 70px;
+            height: 100px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-end;
             z-index: 10;
-            transition: filter 0.3s;
         }
 
-        /* YOU (Femme) */
         #char-you {
             left: 0;
             transition: left 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .emoji-wrapper {
-            font-size: 5rem;
+            font-size: 3.5rem;
             line-height: 1;
             transform: scaleX(-1);
             display: inline-block;
             transition: transform 0.15s;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+            filter: drop-shadow(0 4px 8px var(--shadow));
         }
 
-        /* Animation de marche */
         @keyframes walk {
-            0%, 100% { transform: scaleX(-1) translateY(0px); }
-            50% { transform: scaleX(-1) translateY(-3px); }
+            0%, 100% { transform: scaleX(-1) translateY(0px) rotate(0deg); }
+            25% { transform: scaleX(-1) translateY(-2px) rotate(-5deg); }
+            50% { transform: scaleX(-1) translateY(-4px) rotate(0deg); }
+            75% { transform: scaleX(-1) translateY(-2px) rotate(5deg); }
         }
 
         .emoji-wrapper.walking {
-            animation: walk 0.3s infinite;
+            animation: walk 0.4s infinite;
         }
 
-        /* ME (Homme) */
         #char-me {
             right: 0;
         }
 
         .emoji-static {
-            font-size: 5rem;
+            font-size: 3.5rem;
             line-height: 1;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+            filter: drop-shadow(0 4px 8px var(--shadow));
+        }
+
+        @keyframes meWaiting {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .emoji-static {
+            animation: meWaiting 2s infinite ease-in-out;
         }
 
         .label {
-            margin-top: 8px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 1rem;
-            font-weight: bold;
+            margin-top: 5px;
+            background: var(--card-bg);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
             color: var(--text-color);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px var(--shadow);
+            backdrop-filter: blur(10px);
         }
 
-        /* --- CŒUR --- */
         .heart-container {
             position: absolute;
-            top: -40px;
+            top: -35px;
             right: 0;
             width: 100%;
             text-align: center;
         }
         
         .heart {
-            font-size: 2.5rem;
+            font-size: 2rem;
             display: inline-block;
             color: var(--heart-color);
-            filter: drop-shadow(0 0 8px rgba(230, 57, 70, 0.5));
+            filter: drop-shadow(0 0 10px var(--heart-color));
             transform-origin: center;
         }
 
-        /* --- BOUTON --- */
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
         .btn-container {
             position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 15px;
         }
 
         .btn-action {
-            background: linear-gradient(135deg, #48cae4 0%, #0096c7 100%);
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%);
             color: white;
             border: none;
-            padding: 22px 70px;
-            font-size: 1.6rem;
-            border-radius: 60px;
-            box-shadow: 0 10px 0 #006d8f, 0 15px 25px rgba(0, 150, 199, 0.3);
+            padding: 20px;
+            font-size: 1.4rem;
+            border-radius: 25px;
+            box-shadow: 0 8px 0 #006d8f, 0 12px 20px rgba(0, 150, 199, 0.3);
             cursor: pointer;
             font-family: 'Fredoka', sans-serif;
             transition: all 0.1s;
-            touch-action: manipulation;
-            font-weight: 600;
+            font-weight: 700;
             position: relative;
             overflow: hidden;
+            touch-action: manipulation;
         }
 
         .btn-action::before {
@@ -213,14 +316,9 @@
             transition: left 0.5s;
         }
 
-        .btn-action:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 0 #006d8f, 0 17px 30px rgba(0, 150, 199, 0.4);
-        }
-
         .btn-action:active {
-            box-shadow: 0 3px 0 #006d8f, 0 5px 10px rgba(0, 150, 199, 0.2);
-            transform: translateY(7px);
+            box-shadow: 0 2px 0 #006d8f, 0 4px 8px rgba(0, 150, 199, 0.2);
+            transform: translateY(6px);
         }
 
         .btn-action.clicked::before {
@@ -228,19 +326,41 @@
         }
 
         .btn-action:disabled {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
-            transform: none !important;
         }
 
-        /* Indicateur de clic */
+        .combo-container {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .combo-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .combo-text.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
         .click-indicator {
             position: absolute;
-            font-size: 2rem;
+            font-size: 1.5rem;
             pointer-events: none;
             animation: floatUp 0.8s ease-out forwards;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         @keyframes floatUp {
@@ -250,14 +370,13 @@
             }
             100% {
                 opacity: 0;
-                transform: translateY(-80px) scale(1.5);
+                transform: translateY(-60px) scale(1.3);
             }
         }
 
-        /* --- PARTICULES --- */
         .particle {
             position: fixed;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             pointer-events: none;
             z-index: 1000;
         }
@@ -273,7 +392,21 @@
             }
         }
 
-        /* --- ECRAN DE FIN --- */
+        .motivation-msg {
+            background: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            box-shadow: 0 4px 15px var(--shadow);
+            margin-bottom: 15px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
         .overlay {
             position: fixed;
             top: 0;
@@ -285,6 +418,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            padding: 20px;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.6s;
@@ -297,43 +431,77 @@
         }
 
         .overlay h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
             animation: bounceIn 0.8s ease-out;
+            color: var(--text-color);
         }
 
         .overlay .couple-emoji {
-            font-size: 8rem;
-            animation: heartBeat 1.5s infinite;
-            margin: 20px 0;
+            font-size: 6rem;
+            animation: heartBeatBig 1.5s infinite;
+            margin: 15px 0;
+        }
+
+        @keyframes heartBeatBig {
+            0%, 100% { transform: scale(1); }
+            10%, 30% { transform: scale(1.15); }
+            20%, 40% { transform: scale(1); }
         }
 
         .overlay .message {
-            font-size: 1.5rem;
+            font-size: 1.1rem;
             color: var(--text-color);
-            margin: 20px 0;
+            margin: 15px 0;
             text-align: center;
-            max-width: 600px;
-            padding: 0 20px;
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        .stats-final {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 25px;
+            border-radius: 20px;
+            margin: 15px 0;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-final {
+            text-align: center;
+        }
+
+        .stat-final-label {
+            font-size: 0.8rem;
+            color: #8d99ae;
+            margin-bottom: 5px;
+        }
+
+        .stat-final-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--heart-color);
         }
 
         .btn-restart {
-            margin-top: 30px;
+            margin-top: 20px;
             padding: 15px 40px;
             background: white;
             border: 3px solid var(--text-color);
-            border-radius: 40px;
+            border-radius: 30px;
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-family: 'Fredoka', sans-serif;
             font-weight: 600;
             transition: all 0.3s;
         }
 
-        .btn-restart:hover {
+        .btn-restart:active {
             background: var(--text-color);
             color: white;
-            transform: scale(1.1);
+            transform: scale(0.95);
         }
 
         @keyframes bounceIn {
@@ -350,56 +518,6 @@
             }
         }
 
-        @keyframes heartBeat {
-            0%, 100% { transform: scale(1); }
-            10%, 30% { transform: scale(1.15); }
-            20%, 40% { transform: scale(1); }
-        }
-
-        /* --- RESPONSIVE --- */
-        @media (max-width: 768px) {
-            h1 { font-size: 2rem; }
-            p { font-size: 1rem; }
-            
-            .stat-box {
-                min-width: 120px;
-                padding: 10px 15px;
-            }
-            
-            .stat-value { font-size: 1.5rem; }
-            
-            .track-container {
-                height: 120px;
-            }
-            
-            .character {
-                width: 70px;
-                height: 100px;
-            }
-            
-            .emoji-wrapper, .emoji-static {
-                font-size: 3.5rem;
-            }
-            
-            .heart {
-                font-size: 2rem;
-            }
-            
-            .btn-action {
-                padding: 18px 50px;
-                font-size: 1.3rem;
-            }
-            
-            .overlay h1 {
-                font-size: 2.5rem;
-            }
-            
-            .overlay .couple-emoji {
-                font-size: 5rem;
-            }
-        }
-
-        /* Confettis canvas */
         #confetti-canvas {
             position: fixed;
             top: 0;
@@ -409,16 +527,94 @@
             pointer-events: none;
             z-index: 99;
         }
+
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-gradient-1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+
+        .loader.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-hearts {
+            font-size: 3rem;
+            display: flex;
+            gap: 10px;
+        }
+
+        .loader-heart {
+            animation: pulse 1s infinite;
+        }
+
+        .loader-heart:nth-child(2) { animation-delay: 0.2s; }
+        .loader-heart:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        .loader-text {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        @media (min-width: 768px) {
+            body { padding: 30px; }
+            h1 { font-size: 2.5rem; }
+            .subtitle { font-size: 1rem; }
+            .stats-container { max-width: 700px; gap: 15px; }
+            .stat-box { padding: 15px 20px; }
+            .stat-value { font-size: 1.8rem; }
+            .track-container { max-width: 700px; height: 160px; }
+            .character { width: 90px; height: 120px; }
+            .emoji-wrapper, .emoji-static { font-size: 4.5rem; }
+            .heart { font-size: 2.5rem; }
+            .btn-action { max-width: 600px; padding: 22px; font-size: 1.6rem; }
+            .overlay h1 { font-size: 3.5rem; }
+            .overlay .couple-emoji { font-size: 8rem; }
+            .overlay .message { font-size: 1.3rem; }
+            .motivation-msg { max-width: 600px; font-size: 1rem; }
+        }
     </style>
 </head>
 <body>
 
-    <header style="text-align: center;">
+    <div class="loader" id="loader">
+        <div class="loader-hearts">
+            <div class="loader-heart">💕</div>
+            <div class="loader-heart">💖</div>
+            <div class="loader-heart">💗</div>
+        </div>
+        <div class="loader-text">Chargement de l amour...</div>
+    </div>
+
+    <div class="top-controls">
+        <button class="icon-btn active" id="soundBtn" title="Son">🔊</button>
+        <button class="icon-btn" id="themeBtn" title="Theme">🌙</button>
+    </div>
+
+    <div class="achievement" id="achievement"></div>
+
+    <header>
         <h1>💕 La Rencontre 💕</h1>
-        <p>Clique plusieurs fois pour avancer vers moi </p>
+        <p class="subtitle">Clique pour avancer vers moi. </p>
     </header>
 
-    <!-- Stats -->
     <div class="stats-container">
         <div class="stat-box">
             <div class="stat-label">Clics</div>
@@ -429,21 +625,21 @@
             <div class="stat-value" id="distanceValue">100%</div>
         </div>
         <div class="stat-box">
-            <div class="stat-label">Battements ❤️</div>
-            <div class="stat-value heart-rate" id="heartRate">Normal</div>
+            <div class="stat-label">💓 Coeur</div>
+            <div class="stat-value heart-rate" id="heartRate">😌</div>
         </div>
     </div>
+
+    <div class="motivation-msg" id="motivationMsg">Commence ton aventure ! 🌟</div>
 
     <div class="track-container">
         <div class="progress-line" id="progressLine"></div>
         
-        <!-- Personnage YOU (Femme) -->
         <div class="character" id="char-you">
             <div class="emoji-wrapper" id="sprite-you">🚶‍♀️</div>
             <div class="label">You</div>
         </div>
 
-        <!-- Personnage ME (Homme) -->
         <div class="character" id="char-me">
             <div class="heart-container">
                 <div class="heart" id="heart">❤️</div>
@@ -451,79 +647,238 @@
             <div class="emoji-static" id="sprite-me">🧍‍♂️</div>
             <div class="label">Me</div>
         </div>
-
     </div>
 
-    <!-- Le bouton -->
     <div class="btn-container">
+        <div class="combo-container">
+            <div class="combo-text" id="comboText"></div>
+        </div>
         <button class="btn-action" id="btn">Avancer 💖</button>
     </div>
 
-    <!-- Canvas pour confettis -->
     <canvas id="confetti-canvas"></canvas>
 
-    <!-- Ecran de fin -->
     <div class="overlay" id="winScreen">
-        <h1>❤️ Nous sommes réunis ! ❤️</h1>
+        <h1>❤️ Nous sommes reunis ! ❤️</h1>
         <div class="couple-emoji">👩‍❤️‍💋‍👨</div>
         <div class="message">
-            L'amour c'est comme cette rencontre : 
-            <br>ça demande des efforts, de la patience, 
+            L amour c est comme cette rencontre : 
+            <br>ca demande des efforts, de la patience, 
             <br>mais chaque pas en vaut la peine ! 💕
         </div>
-        <button class="btn-restart" onclick="location.reload()">Recommencer l'aventure 🔄</button>
+        <div class="stats-final">
+            <div class="stat-final">
+                <div class="stat-final-label">Total Clics</div>
+                <div class="stat-final-value" id="finalClicks">0</div>
+            </div>
+            <div class="stat-final">
+                <div class="stat-final-label">Temps</div>
+                <div class="stat-final-value" id="finalTime">0s</div>
+            </div>
+        </div>
+        <button class="btn-restart" onclick="location.reload()">Recommencer 🔄</button>
     </div>
 
     <script>
-        // --- VARIABLES ---
-        const charYou = document.getElementById('char-you');
-        const spriteYou = document.getElementById('sprite-you');
-        const heart = document.getElementById('heart');
-        const btn = document.getElementById('btn');
-        const winScreen = document.getElementById('winScreen');
-        const clickCountEl = document.getElementById('clickCount');
-        const distanceValueEl = document.getElementById('distanceValue');
-        const heartRateEl = document.getElementById('heartRate');
-        const progressLine = document.getElementById('progressLine');
+        var audioContext = null;
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch(e) {
+            console.log('Audio non supporte');
+        }
+        var soundEnabled = true;
 
-        // --- PHYSIQUE ---
-        let position = 0;
-        let velocity = 0;
-        const FRICTION = 0.92;
-        const FORCE = 1.2;
-        const MAX_SPEED = 3.5;
-        const TARGET = 84;
-        let isGameOver = false;
-        let clickCount = 0;
-        let isWalking = false;
+        function playSound(type) {
+            if (!soundEnabled || !audioContext) return;
+            try {
+                var oscillator = audioContext.createOscillator();
+                var gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
 
-        // Niveaux de battements de cœur
-        const heartRates = [
-            { threshold: 0, label: 'Normal', speed: 1.5, scale: 1 },
-            { threshold: 20, label: 'Accéléré', speed: 1.0, scale: 1.1 },
-            { threshold: 40, label: 'Rapide', speed: 0.7, scale: 1.2 },
-            { threshold: 60, label: 'Très rapide', speed: 0.5, scale: 1.3 },
-            { threshold: 75, label: 'Palpitations', speed: 0.3, scale: 1.4 },
-            { threshold: 85, label: '💥 Explosion', speed: 0.15, scale: 1.6 }
+                switch(type) {
+                    case 'click':
+                        oscillator.frequency.value = 400 + Math.random() * 200;
+                        oscillator.type = 'sine';
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.1);
+                        break;
+                    case 'heartbeat':
+                        oscillator.frequency.value = 100;
+                        oscillator.type = 'sine';
+                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.15);
+                        break;
+                    case 'achievement':
+                        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
+                        oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1);
+                        oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2);
+                        oscillator.type = 'triangle';
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                        break;
+                    case 'victory':
+                        var notes = [523.25, 587.33, 659.25, 783.99];
+                        for (var i = 0; i < notes.length; i++) {
+                            var osc = audioContext.createOscillator();
+                            var gain = audioContext.createGain();
+                            osc.connect(gain);
+                            gain.connect(audioContext.destination);
+                            osc.frequency.value = notes[i];
+                            osc.type = 'sine';
+                            gain.gain.setValueAtTime(0.2, audioContext.currentTime + i * 0.15);
+                            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + i * 0.15 + 0.3);
+                            osc.start(audioContext.currentTime + i * 0.15);
+                            osc.stop(audioContext.currentTime + i * 0.15 + 0.3);
+                        }
+                        break;
+                }
+            } catch(e) {
+                console.log('Erreur audio');
+            }
+        }
+
+        var charYou = document.getElementById('char-you');
+        var spriteYou = document.getElementById('sprite-you');
+        var heart = document.getElementById('heart');
+        var btn = document.getElementById('btn');
+        var winScreen = document.getElementById('winScreen');
+        var clickCountEl = document.getElementById('clickCount');
+        var distanceValueEl = document.getElementById('distanceValue');
+        var heartRateEl = document.getElementById('heartRate');
+        var progressLine = document.getElementById('progressLine');
+        var motivationMsg = document.getElementById('motivationMsg');
+        var comboText = document.getElementById('comboText');
+        var soundBtn = document.getElementById('soundBtn');
+        var themeBtn = document.getElementById('themeBtn');
+        var achievement = document.getElementById('achievement');
+        var loader = document.getElementById('loader');
+
+        var position = 0;
+        var velocity = 0;
+        var FRICTION = 0.92;
+        var FORCE = 1.2;
+        var MAX_SPEED = 3.5;
+        var TARGET = 84;
+        var isGameOver = false;
+        var clickCount = 0;
+        var isWalking = false;
+        var combo = 0;
+        var comboTimer = null;
+        var startTime = Date.now();
+        var lastHeartBeat = 0;
+        var achievementsUnlocked = new Set();
+
+        var motivationMessages = [
+            "Continue comme ca ! 💪",
+            "Tu es sur la bonne voie ! 🌟",
+            "Plus que quelques clics ! 🔥",
+            "Elle t attend avec impatience ! 💕",
+            "Presque arrive ! 🎯",
+            "L amour est proche ! 💖",
+            "Ne lache rien ! ⚡",
+            "Tu y es presque ! 🚀"
         ];
 
-        // --- CONFETTIS ---
-        const canvas = document.getElementById('confetti-canvas');
-        const ctx = canvas.getContext('2d');
+        var heartRates = [
+            { threshold: 0, emoji: '😌', label: 'Calme', speed: 1.5, scale: 1 },
+            { threshold: 20, emoji: '😊', label: 'Content', speed: 1.0, scale: 1.1 },
+            { threshold: 40, emoji: '😍', label: 'Amoureux', speed: 0.7, scale: 1.2 },
+            { threshold: 60, emoji: '🥰', label: 'Fou amoureux', speed: 0.5, scale: 1.3 },
+            { threshold: 75, emoji: '😳', label: 'Palpitations', speed: 0.3, scale: 1.4 },
+            { threshold: 85, emoji: '🤯', label: 'Explosion', speed: 0.15, scale: 1.6 }
+        ];
+
+        var achievements = [
+            { id: 'first_click', condition: function() { return clickCount === 1; }, message: '🎉 Premier pas !' },
+            { id: 'combo_5', condition: function() { return combo >= 5; }, message: '🔥 Combo x5 !' },
+            { id: 'combo_10', condition: function() { return combo >= 10; }, message: '⚡ Combo x10 ! Incroyable !' },
+            { id: 'halfway', condition: function() { return position >= TARGET / 2; }, message: '🎯 A mi-chemin !' },
+            { id: 'speed_run', condition: function() { return clickCount <= 30 && position >= TARGET; }, message: '🚀 Speed Run ! Record battu !' }
+        ];
+
+        var isDark = false;
+        themeBtn.addEventListener('click', function() {
+            isDark = !isDark;
+            document.body.dataset.theme = isDark ? 'dark' : '';
+            themeBtn.textContent = isDark ? '☀️' : '🌙';
+            playSound('click');
+        });
+
+        soundBtn.addEventListener('click', function() {
+            soundEnabled = !soundEnabled;
+            soundBtn.classList.toggle('active');
+            soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+            if (soundEnabled) playSound('click');
+        });
+
+        var canvas = document.getElementById('confetti-canvas');
+        var ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        window.addEventListener('resize', () => {
+        window.addEventListener('resize', function() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         });
 
-        // --- BOUCLE PRINCIPALE ---
+        function vibrate(pattern) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(pattern);
+            }
+        }
+
+        function checkAchievements() {
+            for (var i = 0; i < achievements.length; i++) {
+                var ach = achievements[i];
+                if (!achievementsUnlocked.has(ach.id) && ach.condition()) {
+                    achievementsUnlocked.add(ach.id);
+                    showAchievement(ach.message);
+                }
+            }
+        }
+
+        function showAchievement(message) {
+            achievement.textContent = message;
+            achievement.classList.add('show');
+            playSound('achievement');
+            vibrate([50, 100, 50]);
+            setTimeout(function() {
+                achievement.classList.remove('show');
+            }, 3000);
+        }
+
+        function updateCombo() {
+            combo++;
+            clearTimeout(comboTimer);
+            if (combo >= 3) {
+                comboText.textContent = 'COMBO x' + combo + ' 🔥';
+                comboText.classList.add('show');
+                comboText.style.color = combo >= 10 ? '#ff6b6b' : combo >= 5 ? '#FFD93D' : '#48cae4';
+            }
+            comboTimer = setTimeout(function() {
+                combo = 0;
+                comboText.classList.remove('show');
+            }, 1500);
+        }
+
+        function updateMotivation() {
+            var ratio = (position / TARGET) * 100;
+            if (ratio > 10 && ratio < 95) {
+                var msg = motivationMessages[Math.floor(Math.random() * motivationMessages.length)];
+                motivationMsg.textContent = msg;
+            }
+        }
+
         function loop() {
             if (isGameOver) return;
-
             velocity *= FRICTION;
-
             if (Math.abs(velocity) < 0.01) {
                 velocity = 0;
                 if (isWalking) {
@@ -536,204 +891,168 @@
                     isWalking = true;
                 }
             }
-
             position += velocity;
             if (position < 0) position = 0;
             if (position > TARGET) position = TARGET;
-
             charYou.style.left = position + '%';
             progressLine.style.width = position + '%';
-
-            // Mise à jour distance
-            const remaining = Math.max(0, Math.round(100 - (position / TARGET * 100)));
+            var remaining = Math.max(0, Math.round(100 - (position / TARGET * 100)));
             distanceValueEl.textContent = remaining + '%';
-
-            // Cœur qui s'emballe
             updateHeartBeat();
-
-            // Vérification Victoire
+            checkAchievements();
             if (position >= TARGET && !isGameOver) {
                 gameOver();
             }
-
             requestAnimationFrame(loop);
         }
 
-        // --- BATTEMENT DE CŒUR ---
         function updateHeartBeat() {
-            const ratio = (position / TARGET) * 100;
-            
-            let currentRate = heartRates[0];
-            for (let rate of heartRates) {
-                if (ratio >= rate.threshold) {
-                    currentRate = rate;
+            var ratio = (position / TARGET) * 100;
+            var currentRate = heartRates[0];
+            for (var i = 0; i < heartRates.length; i++) {
+                if (ratio >= heartRates[i].threshold) {
+                    currentRate = heartRates[i];
                 }
             }
-
-            heartRateEl.textContent = currentRate.label;
-            
-            // Animation CSS dynamique
-            heart.style.animation = `heartBeat ${currentRate.speed}s infinite`;
-            heart.style.transform = `scale(${currentRate.scale})`;
+            heartRateEl.textContent = currentRate.emoji;
+            heart.style.animation = 'heartBeat ' + currentRate.speed + 's infinite';
+            heart.style.transform = 'scale(' + currentRate.scale + ')';
+            var now = Date.now();
+            if (now - lastHeartBeat > currentRate.speed * 1000) {
+                playSound('heartbeat');
+                lastHeartBeat = now;
+            }
         }
 
-        // Ajouter l'animation dans le style
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes heartBeat {
-                0%, 100% { transform: scale(var(--scale, 1)); }
-                50% { transform: scale(calc(var(--scale, 1) * 1.2)); }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // --- PARTICULES ---
         function createParticles(x, y) {
-            const emojis = ['💕', '💖', '💗', '💓', '💝', '✨', '⭐', '🌟'];
-            const count = 8;
-
-            for (let i = 0; i < count; i++) {
-                const particle = document.createElement('div');
+            var emojis = ['💕', '💖', '💗', '💓', '💝', '✨', '⭐', '🌟'];
+            var count = 6;
+            for (var i = 0; i < count; i++) {
+                var particle = document.createElement('div');
                 particle.className = 'particle';
                 particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
                 particle.style.left = x + 'px';
                 particle.style.top = y + 'px';
-
-                const angle = (Math.PI * 2 * i) / count;
-                const distance = 60 + Math.random() * 40;
-                const tx = Math.cos(angle) * distance;
-                const ty = Math.sin(angle) * distance;
-
+                var angle = (Math.PI * 2 * i) / count;
+                var distance = 40 + Math.random() * 30;
+                var tx = Math.cos(angle) * distance;
+                var ty = Math.sin(angle) * distance;
                 particle.style.setProperty('--tx', tx + 'px');
                 particle.style.setProperty('--ty', ty + 'px');
-                particle.style.animation = `particleFloat ${0.6 + Math.random() * 0.4}s ease-out forwards`;
-
+                particle.style.animation = 'particleFloat ' + (0.5 + Math.random() * 0.3) + 's ease-out forwards';
                 document.body.appendChild(particle);
-
-                setTimeout(() => particle.remove(), 1000);
+                setTimeout(function(p) { return function() { p.remove(); }; }(particle), 800);
             }
         }
 
-        // --- INDICATEUR DE CLIC ---
         function showClickIndicator(x, y) {
-            const indicator = document.createElement('div');
+            var indicators = ['+1 💪', 'Go! 🚀', 'Yes! 💯', 'Nice! 👌'];
+            var indicator = document.createElement('div');
             indicator.className = 'click-indicator';
-            indicator.textContent = '+1 💪';
+            indicator.textContent = indicators[Math.floor(Math.random() * indicators.length)];
             indicator.style.left = x + 'px';
             indicator.style.top = y + 'px';
-            indicator.style.color = '#48cae4';
-
+            indicator.style.color = combo >= 5 ? '#ff6b6b' : '#48cae4';
             document.body.appendChild(indicator);
-            setTimeout(() => indicator.remove(), 800);
+            setTimeout(function() { indicator.remove(); }, 800);
         }
 
-        // --- INTERACTION ---
         function move(e) {
             e.preventDefault();
-            
             if (isGameOver) return;
-
-            // Increment click count
             clickCount++;
             clickCountEl.textContent = clickCount;
-
-            // Ajouter de la vitesse
             velocity += FORCE;
             if (velocity > MAX_SPEED) velocity = MAX_SPEED;
-
-            // Effet visuel sur le bouton
             btn.classList.add('clicked');
-            setTimeout(() => btn.classList.remove('clicked'), 500);
-
-            // Particules
-            const rect = btn.getBoundingClientRect();
-            const x = rect.left + rect.width / 2;
-            const y = rect.top + rect.height / 2;
+            setTimeout(function() { btn.classList.remove('clicked'); }, 500);
+            var rect = btn.getBoundingClientRect();
+            var x = rect.left + rect.width / 2;
+            var y = rect.top + rect.height / 2;
             createParticles(x, y);
-
-            // Indicateur
-            showClickIndicator(x, y - 60);
+            showClickIndicator(x, y - 40);
+            updateCombo();
+            updateMotivation();
+            playSound('click');
+            vibrate(10);
         }
 
-        // --- CONFETTIS FINAUX ---
         function createConfetti() {
-            const confetti = [];
-            const colors = ['#ff6b6b', '#48cae4', '#f093fb', '#FFD93D', '#6BCB77'];
-            
-            for (let i = 0; i < 150; i++) {
+            var confetti = [];
+            var colors = ['#ff6b6b', '#48cae4', '#f093fb', '#FFD93D', '#06ffa5'];
+            for (var i = 0; i < 200; i++) {
                 confetti.push({
                     x: Math.random() * canvas.width,
                     y: -20,
-                    vx: (Math.random() - 0.5) * 4,
+                    vx: (Math.random() - 0.5) * 5,
                     vy: Math.random() * 3 + 2,
                     color: colors[Math.floor(Math.random() * colors.length)],
-                    size: Math.random() * 8 + 4,
+                    size: Math.random() * 10 + 4,
                     rotation: Math.random() * 360,
-                    rotationSpeed: (Math.random() - 0.5) * 10
+                    rotationSpeed: (Math.random() - 0.5) * 15
                 });
             }
-
             function animateConfetti() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                confetti.forEach((c, index) => {
+                for (var i = confetti.length - 1; i >= 0; i--) {
+                    var c = confetti[i];
                     c.y += c.vy;
                     c.x += c.vx;
                     c.rotation += c.rotationSpeed;
-                    c.vy += 0.1; // Gravité
-
+                    c.vy += 0.15;
                     ctx.save();
                     ctx.translate(c.x, c.y);
                     ctx.rotate(c.rotation * Math.PI / 180);
                     ctx.fillStyle = c.color;
                     ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size);
                     ctx.restore();
-
                     if (c.y > canvas.height) {
-                        confetti.splice(index, 1);
+                        confetti.splice(i, 1);
                     }
-                });
-
+                }
                 if (confetti.length > 0) {
                     requestAnimationFrame(animateConfetti);
                 }
             }
-
             animateConfetti();
         }
 
-        // --- FIN DU JEU ---
         function gameOver() {
             isGameOver = true;
             btn.disabled = true;
-            btn.textContent = '💖 Réunis ! 💖';
-            
-            setTimeout(() => {
+            btn.textContent = '💖 Reunis ! 💖';
+            var elapsed = Math.round((Date.now() - startTime) / 1000);
+            document.getElementById('finalClicks').textContent = clickCount;
+            document.getElementById('finalTime').textContent = elapsed + 's';
+            playSound('victory');
+            vibrate([100, 50, 100, 50, 200]);
+            setTimeout(function() {
                 winScreen.classList.add('show');
                 createConfetti();
             }, 800);
         }
 
-        // --- ÉCOUTEURS D'ÉVÉNEMENTS ---
-        // Utiliser 'click' au lieu de 'mousedown' pour meilleure compatibilité
         btn.addEventListener('click', move);
-        
-        // Pour mobile - touchend fonctionne mieux que touchstart
-        btn.addEventListener('touchend', move);
+        btn.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            move(e);
+        });
 
-        // Empêcher le double-tap zoom sur mobile
-        let lastTouchEnd = 0;
+        var lastTouchEnd = 0;
         document.addEventListener('touchend', function(e) {
-            const now = Date.now();
+            var now = Date.now();
             if (now - lastTouchEnd <= 300) {
                 e.preventDefault();
             }
             lastTouchEnd = now;
         }, false);
 
-        // Lancer la boucle
-        loop();
+        setTimeout(function() {
+            loader.classList.add('hide');
+            setTimeout(function() { loader.remove(); }, 500);
+        }, 1500);
 
+        loop();
     </script>
 </body>
 </html>
