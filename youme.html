@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Rencontre - Version Améliorée</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --track-line: #bcccdc;
+            --accent-color: #48cae4;
+            --text-color: #2b2d42;
+            --heart-color: #e63946;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            width: 100vw;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8f3f8 100%);
+            font-family: 'Fredoka', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            user-select: none;
+            position: relative;
+        }
+
+        h1 { 
+            margin-bottom: 5px; 
+            color: var(--text-color);
+            font-size: 2.5rem;
+        }
+        
+        p { 
+            color: #8d99ae; 
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        /* --- STATS --- */
+        .stats-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #8d99ae;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .stat-value.heart-rate {
+            color: var(--heart-color);
+        }
+
+        /* --- PISTE --- */
+        .track-container {
+            position: relative;
+            width: 90%;
+            max-width: 700px;
+            height: 150px;
+            border-bottom: 5px solid var(--track-line);
+            margin-bottom: 50px;
+            background: linear-gradient(to bottom, transparent 80%, rgba(188, 204, 220, 0.1) 100%);
+        }
+
+        /* Ligne de progression */
+        .progress-line {
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #48cae4, #0096c7);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(72, 202, 228, 0.5);
+        }
+
+        /* --- PERSONNAGES --- */
+        .character {
+            position: absolute;
+            bottom: 0;
+            width: 90px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            z-index: 10;
+            transition: filter 0.3s;
+        }
+
+        /* YOU (Femme) */
+        #char-you {
+            left: 0;
+            transition: left 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .emoji-wrapper {
+            font-size: 5rem;
+            line-height: 1;
+            transform: scaleX(-1);
+            display: inline-block;
+            transition: transform 0.15s;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        /* Animation de marche */
+        @keyframes walk {
+            0%, 100% { transform: scaleX(-1) translateY(0px); }
+            50% { transform: scaleX(-1) translateY(-3px); }
+        }
+
+        .emoji-wrapper.walking {
+            animation: walk 0.3s infinite;
+        }
+
+        /* ME (Homme) */
+        #char-me {
+            right: 0;
+        }
+
+        .emoji-static {
+            font-size: 5rem;
+            line-height: 1;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        .label {
+            margin-top: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--text-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- CŒUR --- */
+        .heart-container {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .heart {
+            font-size: 2.5rem;
+            display: inline-block;
+            color: var(--heart-color);
+            filter: drop-shadow(0 0 8px rgba(230, 57, 70, 0.5));
+            transform-origin: center;
+        }
+
+        /* --- BOUTON --- */
+        .btn-container {
+            position: relative;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #48cae4 0%, #0096c7 100%);
+            color: white;
+            border: none;
+            padding: 22px 70px;
+            font-size: 1.6rem;
+            border-radius: 60px;
+            box-shadow: 0 10px 0 #006d8f, 0 15px 25px rgba(0, 150, 199, 0.3);
+            cursor: pointer;
+            font-family: 'Fredoka', sans-serif;
+            transition: all 0.1s;
+            touch-action: manipulation;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-action::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 0 #006d8f, 0 17px 30px rgba(0, 150, 199, 0.4);
+        }
+
+        .btn-action:active {
+            box-shadow: 0 3px 0 #006d8f, 0 5px 10px rgba(0, 150, 199, 0.2);
+            transform: translateY(7px);
+        }
+
+        .btn-action.clicked::before {
+            left: 100%;
+        }
+
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Indicateur de clic */
+        .click-indicator {
+            position: absolute;
+            font-size: 2rem;
+            pointer-events: none;
+            animation: floatUp 0.8s ease-out forwards;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-80px) scale(1.5);
+            }
+        }
+
+        /* --- PARTICULES --- */
+        .particle {
+            position: fixed;
+            font-size: 1.5rem;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty)) rotate(360deg) scale(0.3);
+            }
+        }
+
+        /* --- ECRAN DE FIN --- */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.98) 0%, rgba(255, 218, 185, 0.98) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s;
+            z-index: 100;
+        }
+        
+        .overlay.show { 
+            opacity: 1; 
+            pointer-events: all; 
+        }
+
+        .overlay h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            animation: bounceIn 0.8s ease-out;
+        }
+
+        .overlay .couple-emoji {
+            font-size: 8rem;
+            animation: heartBeat 1.5s infinite;
+            margin: 20px 0;
+        }
+
+        .overlay .message {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            margin: 20px 0;
+            text-align: center;
+            max-width: 600px;
+            padding: 0 20px;
+        }
+
+        .btn-restart {
+            margin-top: 30px;
+            padding: 15px 40px;
+            background: white;
+            border: 3px solid var(--text-color);
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-restart:hover {
+            background: var(--text-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            10%, 30% { transform: scale(1.15); }
+            20%, 40% { transform: scale(1); }
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            p { font-size: 1rem; }
+            
+            .stat-box {
+                min-width: 120px;
+                padding: 10px 15px;
+            }
+            
+            .stat-value { font-size: 1.5rem; }
+            
+            .track-container {
+                height: 120px;
+            }
+            
+            .character {
+                width: 70px;
+                height: 100px;
+            }
+            
+            .emoji-wrapper, .emoji-static {
+                font-size: 3.5rem;
+            }
+            
+            .heart {
+                font-size: 2rem;
+            }
+            
+            .btn-action {
+                padding: 18px 50px;
+                font-size: 1.3rem;
+            }
+            
+            .overlay h1 {
+                font-size: 2.5rem;
+            }
+            
+            .overlay .couple-emoji {
+                font-size: 5rem;
+            }
+        }
+
+        /* Confettis canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99;
+        }
+    </style>
+</head>
+<body>
+
+    <header style="text-align: center;">
+        <h1>💕 La Rencontre 💕</h1>
+        <p>Clique plusieurs fois pour avancer vers moi </p>
+    </header>
+
+    <!-- Stats -->
+    <div class="stats-container">
+        <div class="stat-box">
+            <div class="stat-label">Clics</div>
+            <div class="stat-value" id="clickCount">0</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Distance</div>
+            <div class="stat-value" id="distanceValue">100%</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Battements ❤️</div>
+            <div class="stat-value heart-rate" id="heartRate">Normal</div>
+        </div>
+    </div>
+
+    <div class="track-container">
+        <div class="progress-line" id="progressLine"></div>
+        
+        <!-- Personnage YOU (Femme) -->
+        <div class="character" id="char-you">
+            <div class="emoji-wrapper" id="sprite-you">🚶‍♀️</div>
+            <div class="label">You</div>
+        </div>
+
+        <!-- Personnage ME (Homme) -->
+        <div class="character" id="char-me">
+            <div class="heart-container">
+                <div class="heart" id="heart">❤️</div>
+            </div>
+            <div class="emoji-static" id="sprite-me">🧍‍♂️</div>
+            <div class="label">Me</div>
+        </div>
+
+    </div>
+
+    <!-- Le bouton -->
+    <div class="btn-container">
+        <button class="btn-action" id="btn">Avancer 💖</button>
+    </div>
+
+    <!-- Canvas pour confettis -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Ecran de fin -->
+    <div class="overlay" id="winScreen">
+        <h1>❤️ Nous sommes réunis ! ❤️</h1>
+        <div class="couple-emoji">👩‍❤️‍💋‍👨</div>
+        <div class="message">
+            L'amour c'est comme cette rencontre : 
+            <br>ça demande des efforts, de la patience, 
+            <br>mais chaque pas en vaut la peine ! 💕
+        </div>
+        <button class="btn-restart" onclick="location.reload()">Recommencer l'aventure 🔄</button>
+    </div>
+
+    <script>
+        // --- VARIABLES ---
+        const charYou = document.getElementById('char-you');
+        const spriteYou = document.getElementById('sprite-you');
+        const heart = document.getElementById('heart');
+        const btn = document.getElementById('btn');
+        const winScreen = document.getElementById('winScreen');
+        const clickCountEl = document.getElementById('clickCount');
+        const distanceValueEl = document.getElementById('distanceValue');
+        const heartRateEl = document.getElementById('heartRate');
+        const progressLine = document.getElementById('progressLine');
+
+        // --- PHYSIQUE ---
+        let position = 0;
+        let velocity = 0;
+        const FRICTION = 0.92;
+        const FORCE = 1.2;
+        const MAX_SPEED = 3.5;
+        const TARGET = 84;
+        let isGameOver = false;
+        let clickCount = 0;
+        let isWalking = false;
+
+        // Niveaux de battements de cœur
+        const heartRates = [
+            { threshold: 0, label: 'Normal', speed: 1.5, scale: 1 },
+            { threshold: 20, label: 'Accéléré', speed: 1.0, scale: 1.1 },
+            { threshold: 40, label: 'Rapide', speed: 0.7, scale: 1.2 },
+            { threshold: 60, label: 'Très rapide', speed: 0.5, scale: 1.3 },
+            { threshold: 75, label: 'Palpitations', speed: 0.3, scale: 1.4 },
+            { threshold: 85, label: '💥 Explosion', speed: 0.15, scale: 1.6 }
+        ];
+
+        // --- CONFETTIS ---
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // --- BOUCLE PRINCIPALE ---
+        function loop() {
+            if (isGameOver) return;
+
+            velocity *= FRICTION;
+
+            if (Math.abs(velocity) < 0.01) {
+                velocity = 0;
+                if (isWalking) {
+                    spriteYou.classList.remove('walking');
+                    isWalking = false;
+                }
+            } else {
+                if (!isWalking) {
+                    spriteYou.classList.add('walking');
+                    isWalking = true;
+                }
+            }
+
+            position += velocity;
+            if (position < 0) position = 0;
+            if (position > TARGET) position = TARGET;
+
+            charYou.style.left = position + '%';
+            progressLine.style.width = position + '%';
+
+            // Mise à jour distance
+            const remaining = Math.max(0, Math.round(100 - (position / TARGET * 100)));
+            distanceValueEl.textContent = remaining + '%';
+
+            // Cœur qui s'emballe
+            updateHeartBeat();
+
+            // Vérification Victoire
+            if (position >= TARGET && !isGameOver) {
+                gameOver();
+            }
+
+            requestAnimationFrame(loop);
+        }
+
+        // --- BATTEMENT DE CŒUR ---
+        function updateHeartBeat() {
+            const ratio = (position / TARGET) * 100;
+            
+            let currentRate = heartRates[0];
+            for (let rate of heartRates) {
+                if (ratio >= rate.threshold) {
+                    currentRate = rate;
+                }
+            }
+
+            heartRateEl.textContent = currentRate.label;
+            
+            // Animation CSS dynamique
+            heart.style.animation = `heartBeat ${currentRate.speed}s infinite`;
+            heart.style.transform = `scale(${currentRate.scale})`;
+        }
+
+        // Ajouter l'animation dans le style
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes heartBeat {
+                0%, 100% { transform: scale(var(--scale, 1)); }
+                50% { transform: scale(calc(var(--scale, 1) * 1.2)); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // --- PARTICULES ---
+        function createParticles(x, y) {
+            const emojis = ['💕', '💖', '💗', '💓', '💝', '✨', '⭐', '🌟'];
+            const count = 8;
+
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+
+                const angle = (Math.PI * 2 * i) / count;
+                const distance = 60 + Math.random() * 40;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                particle.style.animation = `particleFloat ${0.6 + Math.random() * 0.4}s ease-out forwards`;
+
+                document.body.appendChild(particle);
+
+                setTimeout(() => particle.remove(), 1000);
+            }
+        }
+
+        // --- INDICATEUR DE CLIC ---
+        function showClickIndicator(x, y) {
+            const indicator = document.createElement('div');
+            indicator.className = 'click-indicator';
+            indicator.textContent = '+1 💪';
+            indicator.style.left = x + 'px';
+            indicator.style.top = y + 'px';
+            indicator.style.color = '#48cae4';
+
+            document.body.appendChild(indicator);
+            setTimeout(() => indicator.remove(), 800);
+        }
+
+        // --- INTERACTION ---
+        function move(e) {
+            e.preventDefault();
+            
+            if (isGameOver) return;
+
+            // Increment click count
+            clickCount++;
+            clickCountEl.textContent = clickCount;
+
+            // Ajouter de la vitesse
+            velocity += FORCE;
+            if (velocity > MAX_SPEED) velocity = MAX_SPEED;
+
+            // Effet visuel sur le bouton
+            btn.classList.add('clicked');
+            setTimeout(() => btn.classList.remove('clicked'), 500);
+
+            // Particules
+            const rect = btn.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            createParticles(x, y);
+
+            // Indicateur
+            showClickIndicator(x, y - 60);
+        }
+
+        // --- CONFETTIS FINAUX ---
+        function createConfetti() {
+            const confetti = [];
+            const colors = ['#ff6b6b', '#48cae4', '#f093fb', '#FFD93D', '#6BCB77'];
+            
+            for (let i = 0; i < 150; i++) {
+                confetti.push({
+                    x: Math.random() * canvas.width,
+                    y: -20,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: Math.random() * 3 + 2,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: Math.random() * 8 + 4,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: (Math.random() - 0.5) * 10
+                });
+            }
+
+            function animateConfetti() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                confetti.forEach((c, index) => {
+                    c.y += c.vy;
+                    c.x += c.vx;
+                    c.rotation += c.rotationSpeed;
+                    c.vy += 0.1; // Gravité
+
+                    ctx.save();
+                    ctx.translate(c.x, c.y);
+                    ctx.rotate(c.rotation * Math.PI / 180);
+                    ctx.fillStyle = c.color;
+                    ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size);
+                    ctx.restore();
+
+                    if (c.y > canvas.height) {
+                        confetti.splice(index, 1);
+                    }
+                });
+
+                if (confetti.length > 0) {
+                    requestAnimationFrame(animateConfetti);
+                }
+            }
+
+            animateConfetti();
+        }
+
+        // --- FIN DU JEU ---
+        function gameOver() {
+            isGameOver = true;
+            btn.disabled = true;
+            btn.textContent = '💖 Réunis ! 💖';
+            
+            setTimeout(() => {
+                winScreen.classList.add('show');
+                createConfetti();
+            }, 800);
+        }
+
+        // --- ÉCOUTEURS D'ÉVÉNEMENTS ---
+        // Utiliser 'click' au lieu de 'mousedown' pour meilleure compatibilité
+        btn.addEventListener('click', move);
+        
+        // Pour mobile - touchend fonctionne mieux que touchstart
+        btn.addEventListener('touchend', move);
+
+        // Empêcher le double-tap zoom sur mobile
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(e) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Lancer la boucle
+        loop();
+
+    </script>
+</body>
+</html>
